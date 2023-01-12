@@ -4,4 +4,4 @@
 
 ### Emirhan Tulimat / Kasım Selimhan Baltaş / Volkan Cicek
 
-DERTE KK ADAY OLMASIN YAZAN KEKO KİMDİ
+Ses 1 2 3
