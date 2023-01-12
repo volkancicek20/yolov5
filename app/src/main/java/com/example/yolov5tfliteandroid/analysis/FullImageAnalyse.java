@@ -155,6 +155,8 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 ////////////////////////////////////////////////////////////////////label = "door";
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
                 /// buraya ses eklenecek
+                System.out.println("-------------" + label);
+                System.out.println("-------------" + res.location);
 
             }
             long end = System.currentTimeMillis();

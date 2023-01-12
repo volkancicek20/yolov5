@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("image", "load model error: " + e.getMessage() + e.toString());
         }
-
+//deneme
     }
 
 
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Tam ekran
         cameraPreviewWrap = findViewById(R.id.camera_preview_wrap);
-//        cameraPreviewWrap.setScaleType(PreviewView.ScaleType.FILL_START);
+//      cameraPreviewWrap.setScaleType(PreviewView.ScaleType.FILL_START);
 
         // box/label画面
         boxLabelCanvas = findViewById(R.id.box_label_canvas);
