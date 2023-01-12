@@ -72,7 +72,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
     @Override
     public void analyze(@NonNull ImageProxy image) {
-        MediaPlayer player2;
+
         int previewHeight = previewView.getHeight();
         int previewWidth = previewView.getWidth();
 

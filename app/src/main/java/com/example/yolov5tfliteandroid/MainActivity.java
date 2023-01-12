@@ -77,9 +77,13 @@ public class MainActivity extends AppCompatActivity {
     //main fonksiyonu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        if(player == null){
+            player = MediaPlayer.create(this,R.raw.door);
+        }
+        player.start();
         // Uygulamayı açarken üst durum çubuğunu gizleyin
 //        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -95,12 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         // box/label画面
         boxLabelCanvas = findViewById(R.id.box_label_canvas);
-
-        // Spinner
-        modelSpinner = findViewById(R.id.model);
-
-        // immersive
-        immersive = findViewById(R.id.immersive);
 
         // Bazı görünümler gerçek zamanlı olarak güncellenir
         inferenceTimeTextView = findViewById(R.id.inference_time);
@@ -123,73 +121,31 @@ public class MainActivity extends AppCompatActivity {
         initModel("bizimModel");
 
         // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
-        modelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String model = (String) adapterView.getItemAtPosition(i);
-                Toast.makeText(MainActivity.this, "loading model: " + model, Toast.LENGTH_LONG).show();
-                initModel(model);
-                if(IS_FULL_SCREEN){
-                    cameraPreviewWrap.removeAllViews();
-                    FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
-                            cameraPreviewMatch,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
-                }else{
-                    cameraPreviewMatch.removeAllViews();
-                    FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
-                            MainActivity.this,
-                            cameraPreviewWrap,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+        if(IS_FULL_SCREEN){
+            cameraPreviewWrap.removeAllViews();
+            FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
+                    cameraPreviewMatch,
+                    boxLabelCanvas,
+                    rotation,
+                    inferenceTimeTextView,
+                    frameSizeTextView,
+                    yolov5TFLiteDetector);
+            cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
+        }else{
+            cameraPreviewMatch.removeAllViews();
+            FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
+                    MainActivity.this,
+                    cameraPreviewWrap,
+                    boxLabelCanvas,
+                    rotation,
+                    inferenceTimeTextView,
+                    frameSizeTextView,
+                    yolov5TFLiteDetector);
+            cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
+        }
 
         // immersive
-        immersive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                IS_FULL_SCREEN = b;
-                if (b) {
-                    // 进入全屏模式
-                    cameraPreviewWrap.removeAllViews();
-                    FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
-                            cameraPreviewMatch,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
 
-                } else {
-                    // 进入全图模式
-                    cameraPreviewMatch.removeAllViews();
-                    FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
-                            MainActivity.this,
-                            cameraPreviewWrap,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
-                }
-            }
-        });
 
 
     }
