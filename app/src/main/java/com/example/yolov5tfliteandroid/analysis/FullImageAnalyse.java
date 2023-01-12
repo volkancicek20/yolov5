@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.media.MediaPlayer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.util.Size;
 import android.view.View;
@@ -35,6 +36,10 @@ import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class FullImageAnalyse implements ImageAnalysis.Analyzer {
+
+    TextToSpeech textToSpeech;
+
+
     public ArrayList<String> obj = new ArrayList<>();
     public static class Result{
 
@@ -157,8 +162,8 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
                 /// buraya ses eklenecek
-                System.out.println("-------------" + label);
-                System.out.println("-------------" + res.location);
+                System.out.println("--------------" + label);
+                System.out.println("--------------" + res.location);
 
             }
             long end = System.currentTimeMillis();

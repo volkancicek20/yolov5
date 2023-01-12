@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     private CameraProcess cameraProcess = new CameraProcess();
 
+
+
     //ekran yönünü aliniyor
     protected int getScreenOrientation() {
         switch (getWindowManager().getDefaultDisplay().getRotation()) {
@@ -140,38 +142,6 @@ public class MainActivity extends AppCompatActivity {
             cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
         }
 
-        // immersive
-        immersive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                IS_FULL_SCREEN = b;
-                if (b) {
-                    // 进入全屏模式
-                    cameraPreviewWrap.removeAllViews();
-                    FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
-                            cameraPreviewMatch,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
-
-                } else {
-                    // 进入全图模式
-                    cameraPreviewMatch.removeAllViews();
-                    FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
-                            MainActivity.this,
-                            cameraPreviewWrap,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
-                }
-            }
-        });
 
 
     }
