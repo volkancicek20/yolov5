@@ -4,5 +4,4 @@
 
 ### Emirhan Tulimat / Kasım Selimhan Baltaş / Volkan Cicek
 
-https://github.com/Amrotulimat
-hello
+DERTE KK ADAY OLMASIN YAZAN KEKO KİMDİ

@@ -96,7 +96,6 @@ public class Yolov5TFLiteDetector {
     public int[] getOutputSize(){return this.OUTPUT_SIZE;}
 
     /**
-     * 初始化模型, 可以通过 addNNApiDelegate(), addGPUDelegate()提前加载相应代理
      *
      * @param activity
      */
@@ -118,7 +117,6 @@ public class Yolov5TFLiteDetector {
     }
 
     /**
-     * 检测步骤
      *
      * @param bitmap
      * @return

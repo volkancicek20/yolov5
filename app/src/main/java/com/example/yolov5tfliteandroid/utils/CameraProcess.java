@@ -87,7 +87,6 @@ public class CameraProcess {
                     CameraSelector cameraSelector = new CameraSelector.Builder()
                             .requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
                     previewBuilder.setSurfaceProvider(previewView.createSurfaceProvider());
-                    // 加多这一步是为了切换不同视图的时候能释放上一视图所有绑定事件
                     cameraProvider.unbindAll();
                     cameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, imageAnalysis, previewBuilder);
 
