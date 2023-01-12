@@ -43,10 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CameraProcess cameraProcess = new CameraProcess();
 
-    /**
-     * 获取屏幕旋转角度,0表示拍照出来的图片是横屏
-     *
-     */
+    //ekran yönünü aliniyor
     protected int getScreenOrientation() {
         switch (getWindowManager().getDefaultDisplay().getRotation()) {
             case Surface.ROTATION_270:
@@ -59,9 +56,10 @@ public class MainActivity extends AppCompatActivity {
                 return 0;
         }
     }
+
     // model baslatma fonksiyonu
     private void initModel(String modelName) {
-        // 加载模型
+
         try {
             this.yolov5TFLiteDetector = new Yolov5TFLiteDetector();
             this.yolov5TFLiteDetector.setModelFile(modelName);
@@ -75,39 +73,41 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    //main fonksiyonu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 打开app的时候隐藏顶部状态栏
+        // Uygulamayı açarken üst durum çubuğunu gizleyin
 //        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
-        // 全屏画面
+        // Tam ekran
         cameraPreviewMatch = findViewById(R.id.camera_preview_match);
         cameraPreviewMatch.setScaleType(PreviewView.ScaleType.FILL_START);
 
-        // 全图画面
+        // Tam ekran
         cameraPreviewWrap = findViewById(R.id.camera_preview_wrap);
 //        cameraPreviewWrap.setScaleType(PreviewView.ScaleType.FILL_START);
 
         // box/label画面
         boxLabelCanvas = findViewById(R.id.box_label_canvas);
 
-        // 下拉按钮
+        // Spinner
         modelSpinner = findViewById(R.id.model);
 
-        // 沉浸式体验按钮
+        // immersive
         immersive = findViewById(R.id.immersive);
 
-        // 实时更新的一些view
+        // Bazı görünümler gerçek zamanlı olarak güncellenir
         inferenceTimeTextView = findViewById(R.id.inference_time);
         frameSizeTextView = findViewById(R.id.frame_size);
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
-        // 申请摄像头权限
+        // Kamera izni için başvur
         if (!cameraProcess.allPermissionsGranted(this)) {
             cameraProcess.requestPermissions(this);
         }
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //
+        // immersive
         immersive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
