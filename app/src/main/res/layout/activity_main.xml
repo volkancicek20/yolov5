@@ -15,11 +15,11 @@
 
     <androidx.camera.view.PreviewView
         android:id="@+id/camera_preview_wrap"
-        android:layout_width="410dp"
-        android:layout_height="615dp"
+        android:layout_width="1080px"
+        android:layout_height="1440px"
         android:background="#00000000"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 
     <ImageView
         android:id="@+id/box_label_canvas"
@@ -91,6 +91,48 @@
             android:layout_marginBottom="5dp"
             android:textColor="#FFFFFF"
             android:text="immersive: " />
+
+        <Switch
+            android:id="@+id/immersive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="on"
+            android:textOff="off"
+            app:layout_constraintBottom_toTopOf="@id/frame_size"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <TextView
+            android:id="@+id/model_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/immersive_name"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="#FFFFFF"
+            android:text="model: " />
+
+        <Spinner
+            android:id="@+id/model"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="#00000000"
+            android:entries="@array/model"
+            android:gravity="right"
+            android:padding="0dp"
+            app:layout_constraintBottom_toTopOf="@id/immersive"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            app:layout_constraintBottom_toTopOf="@id/model_name"
+            app:layout_constraintLeft_toLeftOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
