@@ -59,18 +59,13 @@ public class MainActivity extends AppCompatActivity {
                 return 0;
         }
     }
-
-    /**
-     * 加载模型
-     *
-     * @param modelName
-     */
+    // model baslatma fonksiyonu
     private void initModel(String modelName) {
         // 加载模型
         try {
             this.yolov5TFLiteDetector = new Yolov5TFLiteDetector();
             this.yolov5TFLiteDetector.setModelFile(modelName);
-//            this.yolov5TFLiteDetector.addNNApiDelegate();
+//           this.yolov5TFLiteDetector.addNNApiDelegate();
             this.yolov5TFLiteDetector.addGPUDelegate();
             this.yolov5TFLiteDetector.initialModel(this);
             Log.i("model", "Success loading model" + this.yolov5TFLiteDetector.getModelFile());
@@ -117,16 +112,16 @@ public class MainActivity extends AppCompatActivity {
             cameraProcess.requestPermissions(this);
         }
 
-        // 获取手机摄像头拍照旋转参数
+        // Cep telefonu kamerasının kamera dönüş parametrelerini edinin
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         Log.i("image", "rotation: " + rotation);
 
         cameraProcess.showCameraSupportSize(MainActivity.this);
 
-        // 初始化加载yolov5s
+        // default model olarak yolov5s baslatiliyor
         initModel("yolov5s");
 
-        // 监听模型切换按钮
+        // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
         modelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -162,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 监听视图变化按钮
+        //
         immersive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
