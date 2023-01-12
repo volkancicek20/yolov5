@@ -1,0 +1,8 @@
+automat
+bench
+door
+door1
+elevator
+stairs
+sutun
+trash
