@@ -96,15 +96,10 @@ public class MainActivity extends AppCompatActivity {
         // box/label画面
         boxLabelCanvas = findViewById(R.id.box_label_canvas);
 
-        // Spinner
-        modelSpinner = findViewById(R.id.model);
-
-        // immersive
-        immersive = findViewById(R.id.immersive);
-
         // Bazı görünümler gerçek zamanlı olarak güncellenir
         inferenceTimeTextView = findViewById(R.id.inference_time);
         frameSizeTextView = findViewById(R.id.frame_size);
+
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
         // Kamera izni için başvur
@@ -122,40 +117,28 @@ public class MainActivity extends AppCompatActivity {
         initModel("bizimModel");
 
         // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
-        modelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String model = (String) adapterView.getItemAtPosition(i);
-                Toast.makeText(MainActivity.this, "loading model: " + model, Toast.LENGTH_LONG).show();
-                initModel(model);
-                if(IS_FULL_SCREEN){
-                    cameraPreviewWrap.removeAllViews();
-                    FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
-                            cameraPreviewMatch,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
-                }else{
-                    cameraPreviewMatch.removeAllViews();
-                    FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
-                            MainActivity.this,
-                            cameraPreviewWrap,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+        if(IS_FULL_SCREEN){
+            cameraPreviewWrap.removeAllViews();
+            FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
+                    cameraPreviewMatch,
+                    boxLabelCanvas,
+                    rotation,
+                    inferenceTimeTextView,
+                    frameSizeTextView,
+                    yolov5TFLiteDetector);
+            cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
+        }else{
+            cameraPreviewMatch.removeAllViews();
+            FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
+                    MainActivity.this,
+                    cameraPreviewWrap,
+                    boxLabelCanvas,
+                    rotation,
+                    inferenceTimeTextView,
+                    frameSizeTextView,
+                    yolov5TFLiteDetector);
+            cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
+        }
 
         // immersive
         immersive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

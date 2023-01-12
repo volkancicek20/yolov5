@@ -152,7 +152,9 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 modelToPreviewTransform.mapRect(location);
                 cropCanvas.drawRect(location, boxPaint);
                 obj.add(label);
+
                 ////////////////////////////////////////////////////////////////////label = "door";
+
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
                 /// buraya ses eklenecek
                 System.out.println("-------------" + label);
