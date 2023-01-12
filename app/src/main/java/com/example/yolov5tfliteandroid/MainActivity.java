@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         cameraProcess.showCameraSupportSize(MainActivity.this);
 
         // default model olarak yolov5s baslatiliyor
-        initModel("yolov5s");
+        initModel("bizimModel");
 
         // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
         modelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

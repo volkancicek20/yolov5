@@ -67,22 +67,22 @@ public class Yolov5TFLiteDetector {
 
     public void setModelFile(String modelFile){
         switch (modelFile) {
-            case "yolov5s":
+            case "bizimModel":
                 IS_INT8 = false;
                 MODEL_FILE = MODEL_YOLOV5M;
                 break;
-            case "yolov5n":
-                IS_INT8 = false;
-                MODEL_FILE = MODEL_YOLOV5M;
-                 break;
-            case "yolov5m":
-                IS_INT8 = false;
-                MODEL_FILE = MODEL_YOLOV5M;
-                break;
-            case "yolov5s-int8":
-                IS_INT8 = false;
-                MODEL_FILE = MODEL_YOLOV5M;
-                break;
+//            case "yolov5n":
+//                IS_INT8 = false;
+//                MODEL_FILE = MODEL_YOLOV5M;
+//                 break;
+//            case "yolov5m":
+//                IS_INT8 = false;
+//                MODEL_FILE = MODEL_YOLOV5M;
+//                break;
+//            case "yolov5s-int8":
+//                IS_INT8 = false;
+//                MODEL_FILE = MODEL_YOLOV5M;
+//                break;
             default:
                 Log.i("tfliteSupport", "Only yolov5s/n/m/sint8 can be load!");
         }
