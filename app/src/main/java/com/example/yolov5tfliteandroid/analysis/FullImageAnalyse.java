@@ -12,7 +12,10 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.util.Size;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,11 +40,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
-    TextToSpeech textToSpeech;
-
 
     public ArrayList<String> obj = new ArrayList<>();
-    public static class Result{
+    public class Result{
 
         public Result(long costTime, Bitmap bitmap) {
             this.costTime = costTime;
@@ -158,12 +159,11 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 cropCanvas.drawRect(location, boxPaint);
                 obj.add(label);
 
-                ////////////////////////////////////////////////////////////////////label = "door";
-
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
-                /// buraya ses eklenecek
                 System.out.println("--------------" + label);
                 System.out.println("--------------" + res.location);
+                // call TTS method by label
+                MainActivity.speak(label);
 
             }
             long end = System.currentTimeMillis();
@@ -174,7 +174,6 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
         }).subscribeOn(Schedulers.io())
 
                 .observeOn(AndroidSchedulers.mainThread())
-
                 .subscribe((Result result) -> {
                     boxLabelCanvas.setImageBitmap(result.bitmap);
                     frameSizeTextView.setText(previewHeight + "x" + previewWidth);

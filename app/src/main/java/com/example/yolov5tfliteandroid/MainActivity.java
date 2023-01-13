@@ -4,9 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.camera.view.PreviewView;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
@@ -26,7 +30,47 @@ import com.example.yolov5tfliteandroid.detector.Yolov5TFLiteDetector;
 import com.example.yolov5tfliteandroid.utils.CameraProcess;
 import com.google.common.util.concurrent.ListenableFuture;
 
+
+import java.util.ArrayList;
+import java.util.Locale;
+import android.os.Vibrator;
+
 public class MainActivity extends AppCompatActivity {
+
+
+    private static TextToSpeech mTTS;
+    static Vibrator v;
+    static ArrayList<String> objRecord = new ArrayList<>();
+
+    static int counter = 0;
+
+    public static void vibratePhone(int ms) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(ms);
+        }
+    }
+
+    public static void speak(String text) {
+        if(objRecord.size() != 0) {
+            if(objRecord.get(objRecord.size()-1) == text){
+                System.out.println("Same object detected. Count: " + counter + 1);
+                counter++;
+                if(counter > 4){
+                    counter = 0;
+                    mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+                    vibratePhone(150);
+                }
+                return;
+            }
+        }
+        vibratePhone(150);
+        mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        objRecord.add(text);
+    }
+
     FullImageAnalyse fullImageAnalyse;
     MediaPlayer player = null;
     private boolean IS_FULL_SCREEN = false;
@@ -79,6 +123,23 @@ public class MainActivity extends AppCompatActivity {
     //main fonksiyonu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Vibrator object
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // Text to Speech object
+        mTTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = mTTS.setLanguage(Locale.US);
+                    if (result == TextToSpeech.LANG_MISSING_DATA
+                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "Language not supported");
+                    }
+                } else {
+                    Log.e("TTS", "Initialization failed");
+                }
+            }
+        });
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -124,43 +185,27 @@ public class MainActivity extends AppCompatActivity {
         // default model olarak yolov5s baslatiliyor
         initModel("bizimModel");
 
-        // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
-        modelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String model = (String) adapterView.getItemAtPosition(i);
-                Toast.makeText(MainActivity.this, "loading model: " + model, Toast.LENGTH_LONG).show();
-                initModel(model);
-                if(IS_FULL_SCREEN){
-                    cameraPreviewWrap.removeAllViews();
-                    FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
-                            cameraPreviewMatch,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
-                }else{
-                    cameraPreviewMatch.removeAllViews();
-                    FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
-                            MainActivity.this,
-                            cameraPreviewWrap,
-                            boxLabelCanvas,
-                            rotation,
-                            inferenceTimeTextView,
-                            frameSizeTextView,
-                            yolov5TFLiteDetector);
-                    cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
-                }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-
-
+        if(IS_FULL_SCREEN){
+            cameraPreviewWrap.removeAllViews();
+            FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
+                    cameraPreviewMatch,
+                    boxLabelCanvas,
+                    rotation,
+                    inferenceTimeTextView,
+                    frameSizeTextView,
+                    yolov5TFLiteDetector);
+            cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
+        }else{
+            cameraPreviewMatch.removeAllViews();
+            FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
+                    MainActivity.this,
+                    cameraPreviewWrap,
+                    boxLabelCanvas,
+                    rotation,
+                    inferenceTimeTextView,
+                    frameSizeTextView,
+                    yolov5TFLiteDetector);
+            cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
+        }
     }
 }

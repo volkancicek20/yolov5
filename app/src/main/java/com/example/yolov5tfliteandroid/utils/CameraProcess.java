@@ -84,12 +84,24 @@ public class CameraProcess {
 //                            .setTargetRotation(Surface.ROTATION_90)
                             .build();
 //                    Log.i("builder", previewView.getHeight()+"/"+previewView.getWidth());
+//                    CameraSelector cameraSelector = new CameraSelector.Builder()
+//                            .requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
+//                    CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
+//                    if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK) {
+//
+//                    }
+//                    CameraSelector cameraSelector = new CameraSelector.Builder().requireCameraId("1").build();
+//                    cameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, imageAnalysis, preview);
+//
+//                    previewBuilder.setSurfaceProvider(previewView.createSurfaceProvider());
+//                    cameraProvider.unbindAll();
+//                    cameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, imageAnalysis, previewBuilder);
+
                     CameraSelector cameraSelector = new CameraSelector.Builder()
                             .requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
                     previewBuilder.setSurfaceProvider(previewView.createSurfaceProvider());
                     cameraProvider.unbindAll();
                     cameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, imageAnalysis, previewBuilder);
-
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
