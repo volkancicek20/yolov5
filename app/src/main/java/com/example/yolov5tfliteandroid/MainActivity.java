@@ -53,14 +53,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void speak(String text) {
+    public static void speak(String text, String distance) {
         if(objRecord.size() != 0) {
             if(objRecord.get(objRecord.size()-1) == text){
-                System.out.println("Same object detected. Count: " + counter + 1);
+                System.out.println("Same object detected. Count: " + (counter + 1));
                 counter++;
                 if(counter > 4){
                     counter = 0;
-                    mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+                    mTTS.speak((text + " " + distance), TextToSpeech.QUEUE_FLUSH, null);
                     vibratePhone(150);
                 }
                 return;

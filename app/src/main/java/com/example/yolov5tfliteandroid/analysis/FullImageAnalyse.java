@@ -29,7 +29,10 @@ import com.example.yolov5tfliteandroid.detector.Yolov5TFLiteDetector;
 import com.example.yolov5tfliteandroid.utils.ImageProcess;
 import com.example.yolov5tfliteandroid.utils.Recognition;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -40,8 +43,29 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
+    public static class ObjectDistance{
+        String label;
+        float veryClose;
+        float close;
+        float farAway;
+        static ArrayList<ObjectDistance> objectDistances = new ArrayList<>();
+        ObjectDistance(String label, float veryClose, float close, float farAway){
+            this.label = label; this.veryClose = veryClose; this.close = close; this.farAway = farAway;
+            objectDistances.add(this);
+        }
+        ObjectDistance(){}
 
-    public ArrayList<String> obj = new ArrayList<>();
+    }
+    ObjectDistance door = new ObjectDistance("door", 100000.0F, 10000.0F, 1000.0F);
+    ObjectDistance door1 = new ObjectDistance("door1", 100000.0F, 10000.0F, 1000.0F);
+    ObjectDistance stairs = new ObjectDistance("stairs", 100000.0F, 10000.0F, 1000.0F);
+    ObjectDistance column = new ObjectDistance("column", 100000.0F, 10000.0F, 1000.0F);
+    ObjectDistance elevator = new ObjectDistance("elevator", 100000.0F, 10000.0F, 1000.0F);
+    ObjectDistance automat = new ObjectDistance("automat", 100000.0F, 10000.0F, 1000.0F);
+    ObjectDistance bench = new ObjectDistance("bench", 100000.0F, 10000.0F, 1000.0F);
+    ObjectDistance trash = new ObjectDistance("trash", 100000.0F, 10000.0F, 1000.0F);
+
+    //public ArrayList<String> obj = new ArrayList<>();
     public class Result{
 
         public Result(long costTime, Bitmap bitmap) {
@@ -78,7 +102,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
     @Override
     public void analyze(@NonNull ImageProxy image) {
-        MediaPlayer player2;
+
         int previewHeight = previewView.getHeight();
         int previewWidth = previewView.getWidth();
 
@@ -151,21 +175,56 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
             textPain.setColor(Color.RED);
             textPain.setStyle(Paint.Style.FILL);
 
+            float pixelArea = (float) 0;
+            float maxConfidence = (float) 0;
+            String distanceS ="";
+            String labelParam = "";
+
             for (Recognition res : recognitions) {
                 RectF location = res.getLocation();
                 String label = res.getLabelName();
                 float confidence = res.getConfidence();
                 modelToPreviewTransform.mapRect(location);
                 cropCanvas.drawRect(location, boxPaint);
-                obj.add(label);
-
+                //obj.add(label);
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
-                System.out.println("--------------" + label);
-                System.out.println("--------------" + res.location);
-                // call TTS method by label
-                MainActivity.speak(label);
 
+                if (labelParam == "")
+                    labelParam = label;
+                if (maxConfidence == 0.F)
+                    maxConfidence = confidence;
+                if (recognitions.size()>1){
+                    if(confidence > maxConfidence){
+                        maxConfidence = confidence;
+                        labelParam = label;
+                    }
+                }
+                pixelArea = ((res.location.right - res.location.left)*(res.location.bottom - res.location.top));
             }
+
+            // If any object detected, notify to the user
+            if (recognitions.size()>0){
+                // Algorithm for "info to give blind user"
+                ObjectDistance objectDistance = new ObjectDistance();
+                for (ObjectDistance obj: ObjectDistance.objectDistances) {
+                    if(obj.label.equals(labelParam))
+                        objectDistance.label = obj.label;
+                        objectDistance.veryClose = obj.veryClose;
+                        objectDistance.close = obj.close;
+                        objectDistance.farAway = obj.farAway;
+                        break;
+                }
+                if(pixelArea >= objectDistance.veryClose)
+                    distanceS = "Very Close";
+                else if(pixelArea >= objectDistance.close)
+                    distanceS = "Close";
+                else if(pixelArea >= objectDistance.farAway)
+                    distanceS = "Far away";
+
+                MainActivity.speak(labelParam, distanceS);
+            }
+
+
             long end = System.currentTimeMillis();
             long costTime = (end - start);
             image.close();

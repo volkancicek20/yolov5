@@ -4,5 +4,5 @@ door
 door1
 elevator
 stairs
-sutun
+column
 trash
