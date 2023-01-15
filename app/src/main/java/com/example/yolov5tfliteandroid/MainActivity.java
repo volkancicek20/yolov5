@@ -34,6 +34,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Locale;
 import android.os.Vibrator;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,15 +54,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void speak(String text, String distance) {
+    public static void speak(String text, String distance, float centerX) throws InterruptedException {
+        System.out.println("*** " + text + " - " + distance + " - " + centerX);
         if(objRecord.size() != 0) {
             if(objRecord.get(objRecord.size()-1) == text){
                 System.out.println("Same object detected. Count: " + (counter + 1));
                 counter++;
-                if(counter > 4){
+                if(counter > 3){
                     counter = 0;
                     mTTS.speak((text + " " + distance), TextToSpeech.QUEUE_FLUSH, null);
-                    vibratePhone(150);
+                    //HELP CENTERING OBJECTS
+                    if (centerX >= 680){
+                        System.out.println("RIGHT");
+                        vibratePhone(500);
+//                        TimeUnit.MICROSECONDS.sleep(300);
+//                        vibratePhone(200);
+                    } else if (centerX < 400){
+                        System.out.println("LEFT");
+                        vibratePhone(100);
+                    } else
+                        System.out.println("Middle");
                 }
                 return;
             }
@@ -78,8 +90,6 @@ public class MainActivity extends AppCompatActivity {
     private PreviewView cameraPreviewMatch;
     private PreviewView cameraPreviewWrap;
     private ImageView boxLabelCanvas;
-    private Spinner modelSpinner;
-    private Switch immersive;
     private TextView inferenceTimeTextView;
     private TextView frameSizeTextView;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -158,12 +168,6 @@ public class MainActivity extends AppCompatActivity {
 
         // box/label画面
         boxLabelCanvas = findViewById(R.id.box_label_canvas);
-
-        // Spinner
-        modelSpinner = findViewById(R.id.model);
-
-        // immersive
-        immersive = findViewById(R.id.immersive);
 
         // Bazı görünümler gerçek zamanlı olarak güncellenir
         inferenceTimeTextView = findViewById(R.id.inference_time);

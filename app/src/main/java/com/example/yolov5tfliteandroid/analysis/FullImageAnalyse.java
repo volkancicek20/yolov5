@@ -1,5 +1,6 @@
 package com.example.yolov5tfliteandroid.analysis;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -24,22 +25,15 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.view.PreviewView;
 
 import com.example.yolov5tfliteandroid.MainActivity;
-import com.example.yolov5tfliteandroid.R;
 import com.example.yolov5tfliteandroid.detector.Yolov5TFLiteDetector;
 import com.example.yolov5tfliteandroid.utils.ImageProcess;
 import com.example.yolov5tfliteandroid.utils.Recognition;
-
-import org.checkerframework.checker.units.qual.A;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.util.ArrayList;
+
 
 public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
@@ -56,16 +50,15 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
         ObjectDistance(){}
 
     }
-    ObjectDistance door = new ObjectDistance("door", 100000.0F, 10000.0F, 1000.0F);
-    ObjectDistance door1 = new ObjectDistance("door1", 100000.0F, 10000.0F, 1000.0F);
-    ObjectDistance stairs = new ObjectDistance("stairs", 100000.0F, 10000.0F, 1000.0F);
-    ObjectDistance column = new ObjectDistance("column", 100000.0F, 10000.0F, 1000.0F);
-    ObjectDistance elevator = new ObjectDistance("elevator", 100000.0F, 10000.0F, 1000.0F);
-    ObjectDistance automat = new ObjectDistance("automat", 100000.0F, 10000.0F, 1000.0F);
-    ObjectDistance bench = new ObjectDistance("bench", 100000.0F, 10000.0F, 1000.0F);
-    ObjectDistance trash = new ObjectDistance("trash", 100000.0F, 10000.0F, 1000.0F);
+    ObjectDistance door = new ObjectDistance("door", 170000.0F, 50000.0F, 25000);
+    ObjectDistance door1 = new ObjectDistance("door1", 170000.0F, 50000.0F, 25000);
+    ObjectDistance stairs = new ObjectDistance("stairs", 170000.0F, 100000.0F, 50000);
+    ObjectDistance column = new ObjectDistance("column", 170000.0F, 50000.0F, 25000);
+    ObjectDistance elevator = new ObjectDistance("elevator", 170000.0F, 50000.0F, 25000);
+    ObjectDistance automat = new ObjectDistance("automat", 170000.0F, 50000.0F, 25000);
+    ObjectDistance bench = new ObjectDistance("bench", 150000.0F, 40000.0F, 15000);
+    ObjectDistance trash = new ObjectDistance("trash", 60000, 20000.0F, 10000);
 
-    //public ArrayList<String> obj = new ArrayList<>();
     public class Result{
 
         public Result(long costTime, Bitmap bitmap) {
@@ -100,6 +93,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
         this.yolov5TFLiteDetector = yolov5TFLiteDetector;
     }
 
+    @SuppressLint("SuspiciousIndentation")
     @Override
     public void analyze(@NonNull ImageProxy image) {
 
@@ -169,15 +163,17 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
             Paint boxPaint = new Paint();
             boxPaint.setStrokeWidth(5);
             boxPaint.setStyle(Paint.Style.STROKE);
-            boxPaint.setColor(Color.RED);
+            boxPaint.setColor(Color.GREEN);
+
             Paint textPain = new Paint();
             textPain.setTextSize(50);
-            textPain.setColor(Color.RED);
+            textPain.setColor(Color.WHITE);
             textPain.setStyle(Paint.Style.FILL);
 
             float pixelArea = (float) 0;
             float maxConfidence = (float) 0;
-            String distanceS ="";
+            float centerX = (float) 0;
+            String distanceStr ="";
             String labelParam = "";
 
             for (Recognition res : recognitions) {
@@ -186,7 +182,8 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 float confidence = res.getConfidence();
                 modelToPreviewTransform.mapRect(location);
                 cropCanvas.drawRect(location, boxPaint);
-                //obj.add(label);
+                centerX = (location.left + location.right) / 2.0F;
+                pixelArea = ((location.right - location.left)*(location.bottom - location.top));
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
 
                 if (labelParam == "")
@@ -199,8 +196,15 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                         labelParam = label;
                     }
                 }
-                pixelArea = ((res.location.right - res.location.left)*(res.location.bottom - res.location.top));
             }
+            /*
+            * mesafe hesaplama algoritması geliştirilecek
+            *
+            objeleri kameranın merkezine hizalamaya yardım eden algoritma hazırlanacak**
+            * (titreşim frekansları ile yapmayı düşünüyorum mesela bir çöp kutusu buldu, kullanıcı çöp atacak ama
+            * çöp kutusu çok uzakta, kameranın da en sağında olsun, dümdüz yürüdükçe bu çöp kutusu frame’nin dışına çıkar.
+            İlk başta kameranın ortasıyla hizalamayı düşünüyorum, ya da bu isteğe bağlı da olabilir, bir kısa titreşim:
+            * obje sağda kalıyor, iki kısa titreşim: obje solda kalıyor gibi olabilir.)*/
 
             // If any object detected, notify to the user
             if (recognitions.size()>0){
@@ -215,13 +219,15 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                         break;
                 }
                 if(pixelArea >= objectDistance.veryClose)
-                    distanceS = "Very Close";
+                    distanceStr = "Very Close";
                 else if(pixelArea >= objectDistance.close)
-                    distanceS = "Close";
+                    distanceStr = "Close";
                 else if(pixelArea >= objectDistance.farAway)
-                    distanceS = "Far away";
+                    distanceStr = "Far away";
+                else
+                    distanceStr = "God knows how much.";
 
-                MainActivity.speak(labelParam, distanceS);
+                MainActivity.speak(labelParam, distanceStr, centerX);
             }
 
 
