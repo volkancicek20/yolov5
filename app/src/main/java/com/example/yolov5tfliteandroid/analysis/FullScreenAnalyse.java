@@ -145,11 +145,11 @@ public class FullScreenAnalyse implements ImageAnalysis.Analyzer {
             Paint boxPaint = new Paint();
             boxPaint.setStrokeWidth(5);
             boxPaint.setStyle(Paint.Style.STROKE);
-            boxPaint.setColor(Color.RED);
+            boxPaint.setColor(Color.GREEN);
             // 字体画笔
             Paint textPain = new Paint();
             textPain.setTextSize(50);
-            textPain.setColor(Color.RED);
+            textPain.setColor(Color.WHITE);
             textPain.setStyle(Paint.Style.FILL);
 
             for (Recognition res : recognitions) {

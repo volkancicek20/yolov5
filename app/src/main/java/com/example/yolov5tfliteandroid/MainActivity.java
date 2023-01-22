@@ -4,9 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.camera.view.PreviewView;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
@@ -26,7 +30,59 @@ import com.example.yolov5tfliteandroid.detector.Yolov5TFLiteDetector;
 import com.example.yolov5tfliteandroid.utils.CameraProcess;
 import com.google.common.util.concurrent.ListenableFuture;
 
+
+import java.util.ArrayList;
+import java.util.Locale;
+import android.os.Vibrator;
+import java.util.concurrent.TimeUnit;
+
 public class MainActivity extends AppCompatActivity {
+
+
+    private static TextToSpeech mTTS;
+    static Vibrator v;
+    static ArrayList<String> objRecord = new ArrayList<>();
+
+    static int counter = 0;
+
+    public static void vibratePhone(int ms) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(ms);
+        }
+    }
+
+    public static void speak(String text, String distance, float centerX) throws InterruptedException {
+        System.out.println("*** " + text + " - " + distance + " - " + centerX);
+        if(objRecord.size() != 0) {
+            if(objRecord.get(objRecord.size()-1) == text){
+                System.out.println("Same object detected. Count: " + (counter + 1));
+                counter++;
+                if(counter > 3){
+                    counter = 0;
+                    mTTS.speak((text + " " + distance), TextToSpeech.QUEUE_FLUSH, null);
+                    //HELP CENTERING OBJECTS
+                    if (centerX >= 680){
+                        System.out.println("RIGHT");
+                        vibratePhone(500);
+//                        TimeUnit.MICROSECONDS.sleep(300);
+//                        vibratePhone(200);
+                    } else if (centerX < 400){
+                        System.out.println("LEFT");
+                        vibratePhone(100);
+                    } else
+                        System.out.println("Middle");
+                }
+                return;
+            }
+        }
+        vibratePhone(150);
+        mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        objRecord.add(text);
+    }
+
     FullImageAnalyse fullImageAnalyse;
     MediaPlayer player = null;
     private boolean IS_FULL_SCREEN = false;
@@ -34,14 +90,14 @@ public class MainActivity extends AppCompatActivity {
     private PreviewView cameraPreviewMatch;
     private PreviewView cameraPreviewWrap;
     private ImageView boxLabelCanvas;
-    private Spinner modelSpinner;
-    private Switch immersive;
     private TextView inferenceTimeTextView;
     private TextView frameSizeTextView;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Yolov5TFLiteDetector yolov5TFLiteDetector;
 
     private CameraProcess cameraProcess = new CameraProcess();
+
+
 
     //ekran yönünü aliniyor
     protected int getScreenOrientation() {
@@ -77,13 +133,26 @@ public class MainActivity extends AppCompatActivity {
     //main fonksiyonu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        // Vibrator object
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // Text to Speech object
+        mTTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = mTTS.setLanguage(Locale.US);
+                    if (result == TextToSpeech.LANG_MISSING_DATA
+                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "Language not supported");
+                    }
+                } else {
+                    Log.e("TTS", "Initialization failed");
+                }
+            }
+        });
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(player == null){
-            player = MediaPlayer.create(this,R.raw.door);
-        }
-        player.start();
+
         // Uygulamayı açarken üst durum çubuğunu gizleyin
 //        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -120,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
         // default model olarak yolov5s baslatiliyor
         initModel("bizimModel");
 
-        // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
         if(IS_FULL_SCREEN){
             cameraPreviewWrap.removeAllViews();
             FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
@@ -143,10 +211,5 @@ public class MainActivity extends AppCompatActivity {
                     yolov5TFLiteDetector);
             cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
         }
-
-        // immersive
-
-
-
     }
 }

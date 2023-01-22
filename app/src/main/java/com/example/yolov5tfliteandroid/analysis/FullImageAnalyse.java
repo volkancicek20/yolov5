@@ -1,5 +1,6 @@
 package com.example.yolov5tfliteandroid.analysis;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,10 +9,14 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.media.MediaPlayer;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.util.Size;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,23 +25,41 @@ import androidx.camera.core.ImageProxy;
 import androidx.camera.view.PreviewView;
 
 import com.example.yolov5tfliteandroid.MainActivity;
-import com.example.yolov5tfliteandroid.R;
 import com.example.yolov5tfliteandroid.detector.Yolov5TFLiteDetector;
 import com.example.yolov5tfliteandroid.utils.ImageProcess;
 import com.example.yolov5tfliteandroid.utils.Recognition;
-
-import java.util.ArrayList;
-
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.util.ArrayList;
+
 
 public class FullImageAnalyse implements ImageAnalysis.Analyzer {
-    public ArrayList<String> obj = new ArrayList<>();
-    public static class Result{
+
+    public static class ObjectDistance{
+        String label;
+        float veryClose;
+        float close;
+        float farAway;
+        static ArrayList<ObjectDistance> objectDistances = new ArrayList<>();
+        ObjectDistance(String label, float veryClose, float close, float farAway){
+            this.label = label; this.veryClose = veryClose; this.close = close; this.farAway = farAway;
+            objectDistances.add(this);
+        }
+        ObjectDistance(){}
+
+    }
+    ObjectDistance door = new ObjectDistance("door", 170000.0F, 50000.0F, 25000);
+    ObjectDistance door1 = new ObjectDistance("door1", 170000.0F, 50000.0F, 25000);
+    ObjectDistance stairs = new ObjectDistance("stairs", 170000.0F, 100000.0F, 50000);
+    ObjectDistance column = new ObjectDistance("column", 170000.0F, 50000.0F, 25000);
+    ObjectDistance elevator = new ObjectDistance("elevator", 170000.0F, 50000.0F, 25000);
+    ObjectDistance automat = new ObjectDistance("automat", 170000.0F, 50000.0F, 25000);
+    ObjectDistance bench = new ObjectDistance("bench", 150000.0F, 40000.0F, 15000);
+    ObjectDistance trash = new ObjectDistance("trash", 60000, 20000.0F, 10000);
+
+    public class Result{
 
         public Result(long costTime, Bitmap bitmap) {
             this.costTime = costTime;
@@ -70,6 +93,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
         this.yolov5TFLiteDetector = yolov5TFLiteDetector;
     }
 
+    @SuppressLint("SuspiciousIndentation")
     @Override
     public void analyze(@NonNull ImageProxy image) {
 
@@ -139,11 +163,18 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
             Paint boxPaint = new Paint();
             boxPaint.setStrokeWidth(5);
             boxPaint.setStyle(Paint.Style.STROKE);
-            boxPaint.setColor(Color.RED);
+            boxPaint.setColor(Color.GREEN);
+
             Paint textPain = new Paint();
             textPain.setTextSize(50);
-            textPain.setColor(Color.RED);
+            textPain.setColor(Color.WHITE);
             textPain.setStyle(Paint.Style.FILL);
+
+            float pixelArea = (float) 0;
+            float maxConfidence = (float) 0;
+            float centerX = (float) 0;
+            String distanceStr ="";
+            String labelParam = "";
 
             for (Recognition res : recognitions) {
                 RectF location = res.getLocation();
@@ -151,16 +182,55 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 float confidence = res.getConfidence();
                 modelToPreviewTransform.mapRect(location);
                 cropCanvas.drawRect(location, boxPaint);
-                obj.add(label);
-
-                ////////////////////////////////////////////////////////////////////label = "door";
-
+                centerX = (location.left + location.right) / 2.0F;
+                pixelArea = ((location.right - location.left)*(location.bottom - location.top));
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
-                /// buraya ses eklenecek
-                System.out.println("-------------" + label);
-                System.out.println("-------------" + res.location);
 
+                if (labelParam == "")
+                    labelParam = label;
+                if (maxConfidence == 0.F)
+                    maxConfidence = confidence;
+                if (recognitions.size()>1){
+                    if(confidence > maxConfidence){
+                        maxConfidence = confidence;
+                        labelParam = label;
+                    }
+                }
             }
+            /*
+            * mesafe hesaplama algoritması geliştirilecek
+            *
+            objeleri kameranın merkezine hizalamaya yardım eden algoritma hazırlanacak**
+            * (titreşim frekansları ile yapmayı düşünüyorum mesela bir çöp kutusu buldu, kullanıcı çöp atacak ama
+            * çöp kutusu çok uzakta, kameranın da en sağında olsun, dümdüz yürüdükçe bu çöp kutusu frame’nin dışına çıkar.
+            İlk başta kameranın ortasıyla hizalamayı düşünüyorum, ya da bu isteğe bağlı da olabilir, bir kısa titreşim:
+            * obje sağda kalıyor, iki kısa titreşim: obje solda kalıyor gibi olabilir.)*/
+
+            // If any object detected, notify to the user
+            if (recognitions.size()>0){
+                // Algorithm for "info to give blind user"
+                ObjectDistance objectDistance = new ObjectDistance();
+                for (ObjectDistance obj: ObjectDistance.objectDistances) {
+                    if(obj.label.equals(labelParam))
+                        objectDistance.label = obj.label;
+                        objectDistance.veryClose = obj.veryClose;
+                        objectDistance.close = obj.close;
+                        objectDistance.farAway = obj.farAway;
+                        break;
+                }
+                if(pixelArea >= objectDistance.veryClose)
+                    distanceStr = "Very Close";
+                else if(pixelArea >= objectDistance.close)
+                    distanceStr = "Close";
+                else if(pixelArea >= objectDistance.farAway)
+                    distanceStr = "Far away";
+                else
+                    distanceStr = "God knows how much.";
+
+                MainActivity.speak(labelParam, distanceStr, centerX);
+            }
+
+
             long end = System.currentTimeMillis();
             long costTime = (end - start);
             image.close();
@@ -169,7 +239,6 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
         }).subscribeOn(Schedulers.io())
 
                 .observeOn(AndroidSchedulers.mainThread())
-
                 .subscribe((Result result) -> {
                     boxLabelCanvas.setImageBitmap(result.bitmap);
                     frameSizeTextView.setText(previewHeight + "x" + previewWidth);
