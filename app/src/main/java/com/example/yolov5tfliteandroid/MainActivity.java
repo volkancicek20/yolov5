@@ -20,7 +20,6 @@ import android.widget.TextView;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 
 import com.example.yolov5tfliteandroid.analysis.FullImageAnalyse;
-import com.example.yolov5tfliteandroid.analysis.FullScreenAnalyse;
 import com.example.yolov5tfliteandroid.detector.Yolov5TFLiteDetector;
 import com.example.yolov5tfliteandroid.utils.CameraProcess;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -195,28 +194,18 @@ public class MainActivity extends AppCompatActivity {
         // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
 //=======
 ///>>>>>>> origin/main
-        if(IS_FULL_SCREEN){
-            cameraPreviewWrap.removeAllViews();
-            FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
-                    cameraPreviewMatch,
-                    boxLabelCanvas,
-                    rotation,
-                    inferenceTimeTextView,
-                    frameSizeTextView,
-                    yolov5TFLiteDetector);
-            cameraProcess.startCamera(MainActivity.this, fullScreenAnalyse, cameraPreviewMatch);
-        }else{
-            cameraPreviewMatch.removeAllViews();
-            FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
-                    MainActivity.this,
-                    cameraPreviewWrap,
-                    boxLabelCanvas,
-                    rotation,
-                    inferenceTimeTextView,
-                    frameSizeTextView,
-                    yolov5TFLiteDetector);
-            cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
-        }
+
+        cameraPreviewMatch.removeAllViews();
+        FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
+                MainActivity.this,
+                cameraPreviewWrap,
+                boxLabelCanvas,
+                rotation,
+                inferenceTimeTextView,
+                frameSizeTextView,
+                yolov5TFLiteDetector);
+        cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
+
 
     }
 }

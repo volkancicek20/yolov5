@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,10 +26,14 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
+    /**
+     * Class for defining distance variables for all model object classes
+     */
     public static class ObjectDistance{
         String label;
         float veryClose;
@@ -40,14 +45,19 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
             objectDistances.add(this);
         }
         ObjectDistance(){}
-
     }
-    ObjectDistance door = new ObjectDistance("door", 170000.0F, 50000.0F, 25000);
-    ObjectDistance door1 = new ObjectDistance("door1", 170000.0F, 50000.0F, 25000);
+
+    /*
+    * door: 29923 / 87749 / 654505
+    *
+    *
+    * */
+    ObjectDistance door = new ObjectDistance("door", 654505.0F, 87749.0F, 29923.0F);
+    ObjectDistance door1 = new ObjectDistance("door1", 654505.0F, 87749.0F, 29923.0F);
     ObjectDistance stairs = new ObjectDistance("stairs", 170000.0F, 100000.0F, 50000);
     ObjectDistance column = new ObjectDistance("column", 170000.0F, 50000.0F, 25000);
-    ObjectDistance elevator = new ObjectDistance("elevator", 170000.0F, 50000.0F, 25000);
-    ObjectDistance automat = new ObjectDistance("automat", 170000.0F, 50000.0F, 25000);
+    ObjectDistance elevator = new ObjectDistance("elevator", 654505.0F, 87749.0F, 29923.0F);
+    ObjectDistance automat = new ObjectDistance("automat", 654505.0F, 87749.0F, 29923.0F);
     ObjectDistance bench = new ObjectDistance("bench", 150000.0F, 40000.0F, 15000);
     ObjectDistance trash = new ObjectDistance("trash", 60000, 20000.0F, 10000);
 
@@ -148,10 +158,9 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
             ArrayList<Recognition> recognitions = yolov5TFLiteDetector.detect(modelInputBitmap);
 
-
             Bitmap emptyCropSizeBitmap = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
             Canvas cropCanvas = new Canvas(emptyCropSizeBitmap);
-//
+
             Paint boxPaint = new Paint();
             boxPaint.setStrokeWidth(5);
             boxPaint.setStyle(Paint.Style.STROKE);
@@ -176,6 +185,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 cropCanvas.drawRect(location, boxPaint);
                 centerX = (location.left + location.right) / 2.0F;
                 pixelArea = ((location.right - location.left)*(location.bottom - location.top));
+                Log.i("distance", "label:" + label +": " + pixelArea);
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
 
                 if (labelParam == "")
@@ -200,6 +210,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
             // If any object detected, notify to the user
             if (recognitions.size()>0){
+                Log.i("model", "*/* " + recognitions.size());
                 // Algorithm for "info to give blind user"
                 ObjectDistance objectDistance = new ObjectDistance();
                 for (ObjectDistance obj: ObjectDistance.objectDistances) {

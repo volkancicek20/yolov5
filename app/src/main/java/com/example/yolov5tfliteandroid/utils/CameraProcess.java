@@ -71,32 +71,13 @@ public class CameraProcess {
                 try {
                     ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                     ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
-//                            .setTargetResolution(new Size(1080, 1920))
                             .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-//                            .setTargetAspectRatioCustom(new Rational(16,9))
-//                            .setTargetRotation(Surface.ROTATION_90)
                             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                             .build();
                     imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context), analyzer);
                     Preview previewBuilder = new Preview.Builder()
-//                            .setTargetResolution(new Size(1080,1440))
                             .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-//                            .setTargetRotation(Surface.ROTATION_90)
                             .build();
-//                    Log.i("builder", previewView.getHeight()+"/"+previewView.getWidth());
-//                    CameraSelector cameraSelector = new CameraSelector.Builder()
-//                            .requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
-//                    CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-//                    if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK) {
-//
-//                    }
-//                    CameraSelector cameraSelector = new CameraSelector.Builder().requireCameraId("1").build();
-//                    cameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, imageAnalysis, preview);
-//
-//                    previewBuilder.setSurfaceProvider(previewView.createSurfaceProvider());
-//                    cameraProvider.unbindAll();
-//                    cameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, imageAnalysis, previewBuilder);
-
                     CameraSelector cameraSelector = new CameraSelector.Builder()
                             .requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
                     previewBuilder.setSurfaceProvider(previewView.createSurfaceProvider());

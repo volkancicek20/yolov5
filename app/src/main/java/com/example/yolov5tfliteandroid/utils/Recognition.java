@@ -81,8 +81,6 @@ public class Recognition {
             resultString += location + " ";
         }
 
-        //////////////////////////////////////////////////////////////////////////resultString = "door";
-
         return resultString.trim();
     }
 }

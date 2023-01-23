@@ -98,7 +98,6 @@ public class Yolov5TFLiteDetector {
     public void initialModel(Context activity) {
         // Initialise the model
         try {
-
             ByteBuffer tfliteModel = FileUtil.loadMappedFile(activity, MODEL_FILE);
             tflite = new Interpreter(tfliteModel, options);
             Log.i("tfliteSupport", "Success reading model: " + MODEL_FILE);
@@ -209,12 +208,21 @@ public class Yolov5TFLiteDetector {
         ArrayList<Recognition> nmsRecognitions = nms(allRecognitions);
         ArrayList<Recognition> nmsFilterBoxDuplicationRecognitions = nmsAllClass(nmsRecognitions);
 
-
+        int doorCheck = 0;
         for(Recognition recognition : nmsFilterBoxDuplicationRecognitions){
             int labelId = recognition.getLabelId();
             String labelName = associatedAxisLabels.get(labelId);
             //////////////////labelName = "door";
             recognition.setLabelName(labelName);
+            if(recognition.getLabelName().equals("door") || recognition.getLabelName().equals("open door"))
+                doorCheck += 1;
+        }
+        if(doorCheck == 2){
+            for(Recognition res: nmsRecognitions){
+                if(res.getLabelName().equals("door"))
+                    nmsFilterBoxDuplicationRecognitions.remove(res);
+                break;
+            }
         }
 
         return nmsFilterBoxDuplicationRecognitions;

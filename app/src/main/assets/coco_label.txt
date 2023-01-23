@@ -2,7 +2,7 @@ automat
 bench
 column
 door
-door1
+open door
 elevator
 stairs
 trash
