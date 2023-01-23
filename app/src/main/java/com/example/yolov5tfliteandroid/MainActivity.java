@@ -1,12 +1,12 @@
 package com.example.yolov5tfliteandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.camera.view.PreviewView;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -14,13 +14,8 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.camera.lifecycle.ProcessCameraProvider;
 
@@ -34,7 +29,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.Locale;
 import android.os.Vibrator;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
-            //deprecated in API 26
+
             v.vibrate(ms);
         }
     }
@@ -84,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     FullImageAnalyse fullImageAnalyse;
-    MediaPlayer player = null;
     private boolean IS_FULL_SCREEN = false;
 
     private PreviewView cameraPreviewMatch;
@@ -133,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
     //main fonksiyonu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//<<<<<<< HEAD
+
         // Vibrator object
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         // Text to Speech object
@@ -150,9 +145,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+///>>>>>>> origin/main
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // Uygulamayı açarken üst durum çubuğunu gizleyin
 //        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
@@ -185,10 +181,20 @@ public class MainActivity extends AppCompatActivity {
         Log.i("image", "rotation: " + rotation);
 
         cameraProcess.showCameraSupportSize(MainActivity.this);
-
+        Intent intent = getIntent();
+        String moadelNames = intent.getStringExtra("School");
         // default model olarak yolov5s baslatiliyor
-        initModel("bizimModel");
-
+        if(moadelNames.equals("Start School")){
+            initModel("RTEkampus");
+        }
+        else if(moadelNames.equals("Start Home")){
+            initModel("exampleModel");
+        }
+        else initModel("RTEkampus");
+///<<<<<<< HEAD
+        // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
+//=======
+///>>>>>>> origin/main
         if(IS_FULL_SCREEN){
             cameraPreviewWrap.removeAllViews();
             FullScreenAnalyse fullScreenAnalyse = new FullScreenAnalyse(MainActivity.this,
@@ -211,5 +217,6 @@ public class MainActivity extends AppCompatActivity {
                     yolov5TFLiteDetector);
             cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
         }
+
     }
 }

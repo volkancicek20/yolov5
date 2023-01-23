@@ -2,6 +2,6 @@
     <string name="app_name">Blind Guardians</string>
 
     <string-array name="model">
-        <item>bizimModel</item>
+        <item>RTEkampus</item>
     </string-array>
 </resources>

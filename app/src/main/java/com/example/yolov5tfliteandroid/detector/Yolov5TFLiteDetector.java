@@ -3,21 +3,16 @@ package com.example.yolov5tfliteandroid.detector;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
-import android.os.Binder;
 import android.os.Build;
 import android.util.Log;
 import android.util.Size;
 import android.widget.Toast;
-
-import com.example.yolov5tfliteandroid.MainActivity;
 import com.example.yolov5tfliteandroid.utils.Recognition;
 
-import org.checkerframework.checker.nullness.Opt;
-import org.checkerframework.checker.units.qual.C;
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.Delegate;
+
 import org.tensorflow.lite.Interpreter;
-import org.tensorflow.lite.InterpreterFactory;
+
 import org.tensorflow.lite.gpu.GpuDelegate;
 import org.tensorflow.lite.gpu.CompatibilityList;
 import org.tensorflow.lite.nnapi.NnApiDelegate;
@@ -32,7 +27,7 @@ import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.support.image.ops.ResizeOp;
 import org.tensorflow.lite.support.metadata.MetadataExtractor;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-import org.tensorflow.lite.support.metadata.MetadataParser;
+
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -45,7 +40,7 @@ import java.util.PriorityQueue;
 
 public class Yolov5TFLiteDetector {
 
-    private final Size INPNUT_SIZE = new Size(640, 640);
+    private final Size INPUT_SIZE = new Size(640, 640);
     private final int[] OUTPUT_SIZE = new int[]{1, 25200, 13};
     private Boolean IS_INT8 = false;
     private final float DETECT_THRESHOLD = 0.50f;
@@ -66,22 +61,21 @@ public class Yolov5TFLiteDetector {
     public String getModelFile() {
         return this.MODEL_FILE;
     }
-
     public void setModelFile(String modelFile){
         switch (modelFile) {
-            case "bizimModel":
+            case "RTEkampus":
                 IS_INT8 = false;
                 MODEL_FILE = MODEL_YOLOV5M;
                 break;
-//            case "yolov5n":
+//            case "exampleModel1":
 //                IS_INT8 = false;
 //                MODEL_FILE = MODEL_YOLOV5M;
 //                 break;
-//            case "yolov5m":
+//            case "exampleModel2":
 //                IS_INT8 = false;
 //                MODEL_FILE = MODEL_YOLOV5M;
 //                break;
-//            case "yolov5s-int8":
+//            case "exampleModel3":
 //                IS_INT8 = false;
 //                MODEL_FILE = MODEL_YOLOV5M;
 //                break;
@@ -94,7 +88,7 @@ public class Yolov5TFLiteDetector {
         return this.LABEL_FILE;
     }
 
-    public Size getInputSize(){return this.INPNUT_SIZE;}
+    public Size getInputSize(){return this.INPUT_SIZE;}
     public int[] getOutputSize(){return this.OUTPUT_SIZE;}
 
     /**
@@ -131,7 +125,7 @@ public class Yolov5TFLiteDetector {
         if(IS_INT8){
             imageProcessor =
                     new ImageProcessor.Builder()
-                            .add(new ResizeOp(INPNUT_SIZE.getHeight(), INPNUT_SIZE.getWidth(), ResizeOp.ResizeMethod.BILINEAR))
+                            .add(new ResizeOp(INPUT_SIZE.getHeight(), INPUT_SIZE.getWidth(), ResizeOp.ResizeMethod.BILINEAR))
                             .add(new NormalizeOp(0, 255))
                             .add(new QuantizeOp(input5SINT8QuantParams.getZeroPoint(), input5SINT8QuantParams.getScale()))
                             .add(new CastOp(DataType.UINT8))
@@ -140,7 +134,7 @@ public class Yolov5TFLiteDetector {
         }else{
             imageProcessor =
                     new ImageProcessor.Builder()
-                            .add(new ResizeOp(INPNUT_SIZE.getHeight(), INPNUT_SIZE.getWidth(), ResizeOp.ResizeMethod.BILINEAR))
+                            .add(new ResizeOp(INPUT_SIZE.getHeight(), INPUT_SIZE.getWidth(), ResizeOp.ResizeMethod.BILINEAR))
                             .add(new NormalizeOp(0, 255))
                             .build();
             yolov5sTfliteInput = new TensorImage(DataType.FLOAT32);
@@ -179,14 +173,14 @@ public class Yolov5TFLiteDetector {
         for (int i = 0; i < OUTPUT_SIZE[1]; i++) {
             int gridStride = i * OUTPUT_SIZE[2];
             // 由于yolov5作者在导出tflite的时候对输出除以了image size, 所以这里需要乘回去
-            float x = recognitionArray[0 + gridStride] * INPNUT_SIZE.getWidth();
-            float y = recognitionArray[1 + gridStride] * INPNUT_SIZE.getHeight();
-            float w = recognitionArray[2 + gridStride] * INPNUT_SIZE.getWidth();
-            float h = recognitionArray[3 + gridStride] * INPNUT_SIZE.getHeight();
+            float x = recognitionArray[0 + gridStride] * INPUT_SIZE.getWidth();
+            float y = recognitionArray[1 + gridStride] * INPUT_SIZE.getHeight();
+            float w = recognitionArray[2 + gridStride] * INPUT_SIZE.getWidth();
+            float h = recognitionArray[3 + gridStride] * INPUT_SIZE.getHeight();
             int xmin = (int) Math.max(0, x - w / 2.);
             int ymin = (int) Math.max(0, y - h / 2.);
-            int xmax = (int) Math.min(INPNUT_SIZE.getWidth(), x + w / 2.);
-            int ymax = (int) Math.min(INPNUT_SIZE.getHeight(), y + h / 2.);
+            int xmax = (int) Math.min(INPUT_SIZE.getWidth(), x + w / 2.);
+            int ymax = (int) Math.min(INPUT_SIZE.getHeight(), y + h / 2.);
             float confidence = recognitionArray[4 + gridStride];
             float[] classScores = Arrays.copyOfRange(recognitionArray, 5 + gridStride, this.OUTPUT_SIZE[2] + gridStride);
 //            if(i % 1000 == 0){

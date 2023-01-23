@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,14 +20,12 @@ import com.example.yolov5tfliteandroid.detector.Yolov5TFLiteDetector;
 import com.example.yolov5tfliteandroid.utils.ImageProcess;
 import com.example.yolov5tfliteandroid.utils.Recognition;
 
-import org.tensorflow.lite.support.image.TensorImage;
 
 import java.util.ArrayList;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
