@@ -48,10 +48,12 @@ public class Yolov5TFLiteDetector {
     private final Size INPNUT_SIZE = new Size(640, 640);
     private final int[] OUTPUT_SIZE = new int[]{1, 25200, 13};
     private Boolean IS_INT8 = false;
-    private final float DETECT_THRESHOLD = 0.25f;
-    private final float IOU_THRESHOLD = 0.45f;
-    private final float IOU_CLASS_DUPLICATED_THRESHOLD = 0.3f;
-    private final String MODEL_YOLOV5M = "yolov5m-fp16-320.tflite";
+    private final float DETECT_THRESHOLD = 0.50f;
+    private final float IOU_THRESHOLD = 0.50f;
+    private final float IOU_CLASS_DUPLICATED_THRESHOLD = 0.50f;
+//    private final String MODEL_YOLOV5M = "yolov5m-fp16-320.tflite";
+    private final String MODEL_YOLOV5M = "model_- 22 january 2023 13_12.tflite";
+//    private final String MODEL_YOLOV5M = "kapi-int8.tflite";
     private final String LABEL_FILE = "coco_label.txt";
     MetadataExtractor.QuantizationParams input5SINT8QuantParams = new MetadataExtractor.QuantizationParams(0.003921568859368563f, 0);
     MetadataExtractor.QuantizationParams output5SINT8QuantParams = new MetadataExtractor.QuantizationParams(0.006305381190031767f, 5);

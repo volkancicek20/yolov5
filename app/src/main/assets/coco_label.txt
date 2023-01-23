@@ -1,8 +1,8 @@
 automat
 bench
+column
 door
 door1
 elevator
 stairs
-column
 trash
