@@ -8,8 +8,8 @@
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="290dp"
-        android:layout_height="295dp"
+        android:layout_width="293dp"
+        android:layout_height="299dp"
         android:background="@drawable/ic_baseline_info_24"
         android:onClick="info"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,8 +19,8 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="408dp"
+        android:layout_height="413dp"
         android:background="@drawable/ic_baseline_mic_24"
         android:onClick="speak"
         app:layout_constraintBottom_toTopOf="@+id/button2"
