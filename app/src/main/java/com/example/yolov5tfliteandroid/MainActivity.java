@@ -183,13 +183,14 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String moadelNames = intent.getStringExtra("School");
         // default model olarak yolov5s baslatiliyor
-        if(moadelNames.equals("Start School")){
+        /*if(moadelNames.equals("Start School")){
             initModel("RTEkampus");
         }
         else if(moadelNames.equals("Start Home")){
             initModel("exampleModel");
         }
-        else initModel("RTEkampus");
+        else initModel("RTEkampus");*/
+        initModel("RTEkampus");
 ///<<<<<<< HEAD
         // model secme metodu (model secme spinner'inden model secildigi zaman  bu metod calisir)
 //=======

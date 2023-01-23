@@ -51,6 +51,7 @@
             android:id="@+id/inference_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
             android:layout_marginBottom="20dp"
             android:text="xx ms"
             android:textColor="#FFFFFF"
@@ -79,17 +80,6 @@
             android:text="heigth x width"
             android:textColor="#FFFFFF" />
 
-
-        <TextView
-            android:id="@+id/immersive_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/frame"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginBottom="5dp"
-            android:textColor="#FFFFFF"
-            android:text="immersive: " />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
