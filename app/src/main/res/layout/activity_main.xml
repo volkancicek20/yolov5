@@ -15,8 +15,8 @@
 
     <androidx.camera.view.PreviewView
         android:id="@+id/camera_preview_wrap"
-        android:layout_width="410dp"
-        android:layout_height="613dp"
+        android:layout_width="1080px"
+        android:layout_height="1440px"
         android:background="#00000000"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

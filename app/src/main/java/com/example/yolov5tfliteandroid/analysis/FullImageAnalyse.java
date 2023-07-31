@@ -54,12 +54,12 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
     * */
     ObjectDistance door = new ObjectDistance("door", 654505.0F, 87749.0F, 29923.0F);
     ObjectDistance door1 = new ObjectDistance("door1", 654505.0F, 87749.0F, 29923.0F);
-    ObjectDistance stairs = new ObjectDistance("stairs", 170000.0F, 100000.0F, 50000);
-    ObjectDistance column = new ObjectDistance("column", 170000.0F, 50000.0F, 25000);
-    ObjectDistance elevator = new ObjectDistance("elevator", 654505.0F, 87749.0F, 29923.0F);
-    ObjectDistance automat = new ObjectDistance("automat", 654505.0F, 87749.0F, 29923.0F);
-    ObjectDistance bench = new ObjectDistance("bench", 150000.0F, 40000.0F, 15000);
-    ObjectDistance trash = new ObjectDistance("trash", 60000, 20000.0F, 10000);
+    ObjectDistance stairs = new ObjectDistance("stairs", 1600.0F, 1450.0F, 1080.0F);
+    ObjectDistance column = new ObjectDistance("column", 450000.0F, 130000.0F, 25000.0f);
+    ObjectDistance elevator = new ObjectDistance("elevator", 550505.0F, 70749.0F, 29923.0F);
+    ObjectDistance automat = new ObjectDistance("automat", 950505.0F, 180049.0F, 29923.0F);
+    ObjectDistance bench = new ObjectDistance("bench", 150000.0F, 40000.0F, 15000.0f);
+    ObjectDistance trash = new ObjectDistance("trash", 60000.0f, 20000.0F, 10000.0f);
 
     public class Result{
 
@@ -156,7 +156,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
             Matrix modelToPreviewTransform = new Matrix();
             previewToModelTransform.invert(modelToPreviewTransform);
 
-            ArrayList<Recognition> recognitions = yolov5TFLiteDetector.detect(modelInputBitmap);
+             ArrayList<Recognition> recognitions = yolov5TFLiteDetector.detect(modelInputBitmap);
 
             Bitmap emptyCropSizeBitmap = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
             Canvas cropCanvas = new Canvas(emptyCropSizeBitmap);
@@ -183,8 +183,10 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 float confidence = res.getConfidence();
                 modelToPreviewTransform.mapRect(location);
                 cropCanvas.drawRect(location, boxPaint);
-                centerX = (location.left + location.right) / 2.0F;
+                centerX = (location.left + location.right ) / 2.0F;
                 pixelArea = ((location.right - location.left)*(location.bottom - location.top));
+//                if(res.getLabelName().equals("stairs"))
+//                    pixelArea = location.bottom;
                 Log.i("distance", "label:" + label +": " + pixelArea);
                 cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
 
@@ -221,14 +223,16 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                         objectDistance.farAway = obj.farAway;
                         break;
                 }
-                if(pixelArea >= objectDistance.veryClose)
+                if(labelParam.equals("stairs"))
+                    distanceStr = "";
+                else if(pixelArea >= objectDistance.veryClose)
                     distanceStr = "Very Close";
                 else if(pixelArea >= objectDistance.close)
                     distanceStr = "Close";
-                else if(pixelArea >= objectDistance.farAway)
-                    distanceStr = "Far away";
+//                else if(pixelArea >= objectDistance.farAway)
+//                    distanceStr = "Far away";
                 else
-                    distanceStr = "God knows how much.";
+                    distanceStr = "Far away";
 
                 MainActivity.speak(labelParam, distanceStr, centerX);
             }

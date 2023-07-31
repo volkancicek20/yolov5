@@ -57,13 +57,13 @@ public class MainActivity extends AppCompatActivity {
                     counter = 0;
                     mTTS.speak((text + " " + distance), TextToSpeech.QUEUE_FLUSH, null);
                     //HELP CENTERING OBJECTS
-                    if (centerX >= 680){
-                        System.out.println("RIGHT");
+                    if (centerX >= 700){
+                        //System.out.println("RIGHT");
                         vibratePhone(500);
 //                        TimeUnit.MICROSECONDS.sleep(300);
 //                        vibratePhone(200);
-                    } else if (centerX < 400){
-                        System.out.println("LEFT");
+                    } else if (centerX < 500){
+                        //System.out.println("LEFT");
                         vibratePhone(100);
                     } else
                         System.out.println("Middle");
